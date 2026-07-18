@@ -1,7 +1,7 @@
 {
   "name": "KirmelCript",
   "short_name": "KirmelCript",
-  "description": "Безопасный мессенджер с end-to-end шифрованием",
+  "description": "Безопасный мессенджер с шифрованием",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1e1e2f",

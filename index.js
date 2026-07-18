@@ -1,4 +1,4 @@
-// index.js — точка входа, инициализация Firebase, авторизация
+// точка входа, инициализация Firebase, авторизация
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut 
@@ -6,7 +6,7 @@ import {
 import { getFirestore } from 'firebase/firestore';
 import { AppState, UIRenderer } from './app.js';
 
-// Конфигурация Firebase (замените на свои данные)
+// Конфигурация Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCpqM2Mbz_0l1hB5BLgQ80F8GYFKdSw3PA",
     authDomain: "kirmelcript.firebaseapp.com",

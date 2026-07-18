@@ -1,14 +1,13 @@
-// app.js — модуль управления состоянием, UI и шифрованием
+// модуль управления состоянием, UI и шифрованием
 import { 
   collection, addDoc, query, orderBy, onSnapshot, 
   where, getDocs, updateDoc, doc, arrayUnion, arrayRemove 
 } from 'firebase/firestore';
 
-// --- Класс для работы с шифрованием AES-GCM (Web Crypto) ---
+// --- Работы с шифрованием AES-GCM (Web Crypto) ---
 export class CryptoService {
   constructor() {
     // Ключ хранится в сессионной памяти (при обновлении страницы остаётся)
-    // Для демонстрации используем sessionStorage, но для production лучше IndexedDB
     this.key = null;
     this.keyId = 'kirmel_aes_key';
     this._loadKeyFromSession();
@@ -69,7 +68,7 @@ export class CryptoService {
   }
 }
 
-// --- Класс управления состоянием приложения ---
+// --- Управление состоянием приложения ---
 export class AppState {
   constructor() {
     this.currentUser = null;       // { uid, email, displayName }
@@ -150,7 +149,7 @@ export class AppState {
         });
       }
       this.setMessages(msgs);
-      // Автоскролл вниз (выполняется в UI)
+      // Автоскролл вниз (UI)
     }, (error) => {
       console.error('Ошибка подписки на сообщения:', error);
     });
@@ -208,7 +207,7 @@ export class AppState {
         updatedAt: new Date()
       });
     } catch {
-      // Если документ не существует, создаём
+      // Если документ не существует, создаём!!!!!!!!!
       await addDoc(collection(this.db, 'users'), {
         uid: user.uid,
         email: user.email,
@@ -250,7 +249,7 @@ export class UIRenderer {
     });
     // Выход
     document.getElementById('logout-btn').addEventListener('click', () => {
-      // Логика выхода обрабатывается в index.js
+      // остольноое обрабатывается в index.js
       window.dispatchEvent(new CustomEvent('logout-request'));
     });
   }

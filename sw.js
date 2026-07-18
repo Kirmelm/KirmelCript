@@ -1,4 +1,4 @@
-// sw.js — Service Worker для офлайн-кэширования (в корне проекта)
+// Service Worker для офлайн-кэширования (в корне проекта)
 const CACHE_NAME = 'kirmel-cache-v1';
 const STATIC_ASSETS = [
   '/',
