@@ -1,0 +1,71 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e1e2f">
+  <title>bvz nbgj vjtuj vtctyl;thf Kirmel-peer</title>
+  <!-- Подключаем стили -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Семантическая структура приложения -->
+  <div id="app" class="app-container">
+    <!-- Панель аутентификации -->
+    <section id="auth-section" class="auth-section hidden">
+      <div class="auth-card">
+        <h1>KirmelCript</h1>
+        <p>Защищённый мессенджер с end-to-end шифрованием</p>
+        <button id="google-login-btn" class="btn-primary">Войти через Google</button>
+      </div>
+    </section>
+
+    <!-- Основной интерфейс мессенджера -->
+    <main id="messenger" class="messenger hidden">
+      <!-- Боковая панель: список чатов и пользователей -->
+      <aside class="sidebar">
+        <header class="sidebar-header">
+          <h2>Чаты</h2>
+          <button id="logout-btn" class="btn-icon" aria-label="Выйти">⏻</button>
+        </header>
+        <div class="user-list" id="user-list">
+          <!-- Список пользователей будет отрендерен динамически -->
+        </div>
+        <footer class="sidebar-footer">
+          <span id="current-user-email">user@example.com</span>
+        </footer>
+      </aside>
+
+      <!-- Область чата -->
+      <section class="chat-area">
+        <header class="chat-header" id="chat-header">
+          <span id="chat-recipient">Выберите чат</span>
+        </header>
+        <div class="messages-container" id="messages-container">
+          <!-- Сообщения рендерятся здесь -->
+        </div>
+        <form class="message-form" id="message-form">
+          <input type="text" id="message-input" placeholder="Введите сообщение..." autocomplete="off">
+          <button type="submit" class="btn-send" id="send-btn">➤</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Подключаем Firebase SDK (модули) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <!-- Точка входа и модули приложения -->
+  <script type="module" src="index.js"></script>
+</body>
+</html>
