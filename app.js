@@ -314,4 +314,4 @@ export class UIRenderer {
       </div>`;
     }).join('');
   }
-}я
+}
