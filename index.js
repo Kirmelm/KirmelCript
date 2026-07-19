@@ -1,4 +1,5 @@
 // точка входа, инициализация Firebase, авторизация
+import { getFirestore, collection, query, where, getDocs, setDoc, doc } from "https://gstatic.com";
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut 
