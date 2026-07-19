@@ -1,6 +1,6 @@
 // модуль управления состоянием, UI и шифрованием
 import { 
-  collection, addDoc, query, orderBy, onSnapshot, 
+  collection, addDoc, setDocs, query, orderBy, onSnapshot, 
   where, getDocs, updateDoc, doc, arrayUnion, arrayRemove 
 } from 'firebase/firestore';
 
@@ -196,27 +196,21 @@ export class AppState {
     }
   }
 
-  // Регистрация пользователя в Firestore
-  async registerUser(user) {
-    if (!this.db) return;
-    const userRef = doc(this.db, 'users', user.uid);
-    try {
-      await updateDoc(userRef, {
-        email: user.email,
-        displayName: user.displayName || user.email,
-        updatedAt: new Date()
-      });
-    } catch {
-      // Если документ не существует, создаём!!!!!!!!!
-      await addDoc(collection(this.db, 'users'), {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email,
-        createdAt: new Date()
-      });
+    async registerUser(user) {
+        if (!user) return;
+        try {
+            await setDoc(doc(this.db, 'users', user.uid), {
+                uid: user.uid,
+                email: user.email,
+                nickname: user.displayName,
+                lastSeen: new Date()
+            }, { merge: true });
+        } catch (error) {
+            console.error("Ошибка при сохранении пользователя в БД:", error);
+        }
     }
   }
-}
+
 
 // --- UI Рендерер (отвечает за отрисовку) ---
 export class UIRenderer {
