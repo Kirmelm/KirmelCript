@@ -103,7 +103,7 @@ state.subscribe((s) => {
   }
 });
 
-// Логика поиска кента по UID или Email
+// Финальная рабочая логика поиска кента
 document.getElementById('friend-search-btn').addEventListener('click', async () => {
     const inputValue = document.getElementById('friend-search-input').value.trim();
     const currentUser = auth.currentUser;
@@ -114,7 +114,7 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
     try {
         let targetUser = null;
 
-        // 1. Проверяем, может ввели готовый UID
+        // 1. Ищем по UID в коллекции users
         const userDocRef = doc(db, "users", inputValue);
         const userDocSnap = await getDoc(userDocRef);
 
@@ -130,31 +130,43 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
             }
         }
 
-        if (!targetUser) return alert("Такой кент не найден. Проверь ID/Email!");
+        if (!targetUser) return alert("Кент не найден. Проверь ID/Email!");
         if (targetUser.uid === currentUser.uid) return alert("Это твой собственный ID!");
 
-        // 3. Генерируем общий ID чата
+        // 3. Создаем чат в базе chats
         const chatID = [currentUser.uid, targetUser.uid].sort().join("_");
 
-        // Создаем или обновляем чат в базе
         await setDoc(doc(db, "chats", chatID), {
             participants: [currentUser.uid, targetUser.uid],
             updatedAt: new Date()
         }, { merge: true });
 
-        // 4. Переключаем интерфейс на этот чат
+        // 4. Запихиваем кента в стейт, чтобы он появился в списке
+        // Если в state.users его еще нет, добавляем вручную
+        const userExists = state.users.some(u => u.uid === targetUser.uid);
+        if (!userExists) {
+            state.users.push(targetUser);
+        }
+
+        // Выбираем этого пользователя активным
         state.selectedUserId = targetUser.uid;
         
+        // Включаем прослушку сообщений для этого чата
         if (typeof state.loadMessagesForUser === "function") {
             state.loadMessagesForUser(targetUser.uid);
         }
 
+        // ПИНАЕМ ИНТЕРФЕЙС, ЧТОБЫ ОН ВСЁ ПЕРЕРИСОВАЛ
+        if (typeof ui !== "undefined" && typeof ui.render === "function") {
+            ui.render();
+        }
+
+        // Очищаем инпут
         document.getElementById('friend-search-input').value = "";
-        alert(`Чат с ${targetUser.nickname || 'кентом'} открыт!`);
 
     } catch (error) {
         console.error("Ошибка поиска:", error);
-        alert("Не удалось добавить чат.");
+        alert("Не удалось добавить чат. Проверь консоль!");
     }
 });
 
