@@ -1,18 +1,19 @@
 // точка входа, инициализация Firebase, авторизация
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, get, child, push, query, orderByChild, equalTo, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { AppState, UIRenderer } from './app.js';
 
 // Конфигурация Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyCpqM2Mbz_0l1hB5BLgQ80F8GYFKdSw3PA",
-    authDomain: "kirmelcript.firebaseapp.com",
-    projectId: "kirmelcript",
-    storageBucket: "kirmelcript.firebasestorage.app",
-    messagingSenderId: "668992683850",
-    appId: "1:668992683850:web:c2f76667fafac7cd714bb3",
-    measurementId: "G-MD938Z2WX6"
+  apiKey: "AIzaSyCpqM2Mbz_0l1hB5BLgQ80F8GYFKdSw3PA",
+  authDomain: "kirmelcript.firebaseapp.com",
+  databaseURL: "https://kirmelcript-default-rtdb.firebaseio.com",
+  projectId: "kirmelcript",
+  storageBucket: "kirmelcript.firebasestorage.app",
+  messagingSenderId: "668992683850",
+  appId: "1:668992683850:web:c2f76667fafac7cd714bb3",
+  measurementId: "G-MD938Z2WX6"
 };
 
 // Инициализация Firebase
