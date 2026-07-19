@@ -11,11 +11,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Ищи похожую структуру внизу левой панели и вставь этот див НАД почтой -->
-  <div class="search-friend-bar">
-      <input type="text" id="friend-search-input" placeholder="UID или Email...">
-      <button id="friend-search-btn">➕</button>
-  </div>
+
 
   <!-- Семантическая структура приложения -->
   <div id="app" class="app-container">
@@ -39,11 +35,14 @@
         <div class="user-list" id="user-list">
           <!-- Список пользователей -->
         </div>
+        <div class="search-friend-bar">
+          <input type="text" id="friend-search-input" placeholder="UID или Email...">
+          <button id="friend-search-btn">➕</button>
+        </div>
         <footer class="sidebar-footer">
           <span id="current-user-email">user@example.com</span>
         </footer>
       </aside>
-
       <!-- Чаты -->
       <section class="chat-area">
         <header class="chat-header" id="chat-header">
