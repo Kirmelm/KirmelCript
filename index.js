@@ -21,11 +21,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Состояние приложения
 const state = new AppState();
 state.setDb(db);
 
-// UI Рендерер
 const ui = new UIRenderer(state);
 
 // Обработчик входа через Google
@@ -95,7 +93,7 @@ state.subscribe((s) => {
   }
 });
 
-// Финальная рабочая логика поиска кента
+// Поиск друга
 document.getElementById('friend-search-btn').addEventListener('click', async () => {
     const inputValue = document.getElementById('friend-search-input').value.trim();
     const currentUser = auth.currentUser;
@@ -107,7 +105,6 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
         let targetUser = null;
         let targetUid = null;
 
-        // 1. Ищем по UID в коллекции users
         const userDocRef = doc(db, "users", inputValue);
         const userDocSnap = await getDoc(userDocRef);
 
@@ -115,7 +112,6 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
             targetUser = userDocSnap.data();
             targetUid = inputValue;
         } else {
-            // 2. Если по UID не нашли, ищем по Email
             const usersRef = collection(db, "users");
             const qEmail = query(usersRef, where("email", "==", inputValue));
             const queryEmail = await getDocs(qEmail);
@@ -129,7 +125,6 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
         if (!targetUser) return alert("Кент не найден. Проверь ID/Email!");
         if (targetUid === currentUser.uid) return alert("Это твой собственный ID!");
 
-        // 3. Создаем чат в базе chats
         const chatID = [currentUser.uid, targetUid].sort().join("_");
 
         await setDoc(doc(db, "chats", chatID), {
@@ -137,7 +132,6 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
             updatedAt: new Date()
         }, { merge: true });
 
-        // 4. Добавляем кента в стейт
         const userExists = state.users.some(u => u.uid === targetUid);
         if (!userExists) {
             state.users.push({
@@ -147,7 +141,6 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
             });
         }
 
-        // Выбираем этого пользователя активным
         state.selectedUserId = targetUid;
         state.loadMessagesForUser(targetUid);
         ui.render();
