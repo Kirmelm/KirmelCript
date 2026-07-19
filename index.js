@@ -1,7 +1,7 @@
 // точка входа, инициализация Firebase, авторизация
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, set, get, child, push, query, orderByChild, equalTo, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { AppState, UIRenderer } from './app.js';
 
 // Конфигурация Firebase
@@ -66,18 +66,13 @@ window.addEventListener('logout-request', async () => {
 // Отслеживание состояния аутентификации
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // Сначала временно ставим то, что есть в Google аккаунте
         state.setUser({
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || "Аноним",
         });
-
-        // Регистрируем/обновляем в БД (код функции registerUser мы исправим на следующем шаге)
         await state.registerUser(state.currentUser);
         await state.loadUsers();
-
-        // Если есть ранее выбранный пользователь, перезагружаем чат
         if (state.selectedUserId) {
             state.loadMessagesForUser(state.selectedUserId);
         }
@@ -89,11 +84,9 @@ onAuthStateChanged(auth, async (user) => {
             state.unsubscribeMessages();
             state.unsubscribeMessages = null;
         }
-        // Показываем экран входа
         ui.render();
     }
 });
-
 
 // Для корректной работы выбираем первого пользователя при загрузке
 state.subscribe((s) => {
@@ -112,6 +105,7 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
 
     try {
         let targetUser = null;
+        let targetUid = null;
 
         // 1. Ищем по UID в коллекции users
         const userDocRef = doc(db, "users", inputValue);
@@ -119,48 +113,45 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
 
         if (userDocSnap.exists()) {
             targetUser = userDocSnap.data();
+            targetUid = inputValue;
         } else {
             // 2. Если по UID не нашли, ищем по Email
             const usersRef = collection(db, "users");
             const qEmail = query(usersRef, where("email", "==", inputValue));
             const queryEmail = await getDocs(qEmail);
             if (!queryEmail.empty) {
-                targetUser = queryEmail.docs.data();
+                const docSnap = queryEmail.docs[0];
+                targetUser = docSnap.data();
+                targetUid = docSnap.id;
             }
         }
 
         if (!targetUser) return alert("Кент не найден. Проверь ID/Email!");
-        if (targetUser.uid === currentUser.uid) return alert("Это твой собственный ID!");
+        if (targetUid === currentUser.uid) return alert("Это твой собственный ID!");
 
         // 3. Создаем чат в базе chats
-        const chatID = [currentUser.uid, targetUser.uid].sort().join("_");
+        const chatID = [currentUser.uid, targetUid].sort().join("_");
 
         await setDoc(doc(db, "chats", chatID), {
-            participants: [currentUser.uid, targetUser.uid],
+            participants: [currentUser.uid, targetUid],
             updatedAt: new Date()
         }, { merge: true });
 
-        // 4. Запихиваем кента в стейт, чтобы он появился в списке
-        // Если в state.users его еще нет, добавляем вручную
-        const userExists = state.users.some(u => u.uid === targetUser.uid);
+        // 4. Добавляем кента в стейт
+        const userExists = state.users.some(u => u.uid === targetUid);
         if (!userExists) {
-            state.users.push(targetUser);
+            state.users.push({
+                uid: targetUid,
+                email: targetUser.email,
+                displayName: targetUser.displayName || targetUser.email
+            });
         }
 
         // Выбираем этого пользователя активным
-        state.selectedUserId = targetUser.uid;
-        
-        // Включаем прослушку сообщений для этого чата
-        if (typeof state.loadMessagesForUser === "function") {
-            state.loadMessagesForUser(targetUser.uid);
-        }
+        state.selectedUserId = targetUid;
+        state.loadMessagesForUser(targetUid);
+        ui.render();
 
-        // ПИНАЕМ ИНТЕРФЕЙС, ЧТОБЫ ОН ВСЁ ПЕРЕРИСОВАЛ
-        if (typeof ui !== "undefined" && typeof ui.render === "function") {
-            ui.render();
-        }
-
-        // Очищаем инпут
         document.getElementById('friend-search-input').value = "";
 
     } catch (error) {
@@ -168,6 +159,5 @@ document.getElementById('friend-search-btn').addEventListener('click', async () 
         alert("Не удалось добавить чат. Проверь консоль!");
     }
 });
-
 
 console.log('🔐 KirmelCript: приложение инициализировано с AES-GCM шифрованием');

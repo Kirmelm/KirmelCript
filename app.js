@@ -1,8 +1,8 @@
 // модуль управления состоянием, UI и шифрованием
-import {
+import { 
   collection, addDoc, setDoc, query, orderBy, onSnapshot,
   where, getDocs, getDoc, updateDoc, doc, arrayUnion, arrayRemove
-} from 'firebase/firestore';
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- Работы с шифрованием AES-GCM (Web Crypto) ---
 export class CryptoService {
